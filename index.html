@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>崔志宇给我好好回答</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; overflow:hidden; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(160deg,#ffd9e8 0%,#ffc0d9 45%,#ffb3d1 100%);
+    display:flex; align-items:center; justify-content:center;
+    user-select:none; touch-action:manipulation; overflow:hidden;
+  }
+  .wrap {
+    width:100%; max-width:480px; height:100%;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:space-between;
+    padding: 6vh 24px 8vh; position:relative;
+  }
+  .title {
+    font-size: clamp(20px, 6vw, 30px);
+    font-weight: 800; color:#c2185b; text-align:center;
+    letter-spacing:1px; text-shadow: 0 2px 6px rgba(255,255,255,.8);
+    transition: all .35s ease; min-height: 1.3em;
+  }
+  .title.happy { color:#e91e63; }
+
+  .stage {
+    flex:1; width:100%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .stage img {
+    max-width: 82%; max-height: 46vh; object-fit: contain;
+    filter: drop-shadow(0 12px 24px rgba(194,24,91,.28));
+    animation: float 2.6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-12px); }
+  }
+  .stage.shake img { animation: shake .45s ease infinite; }
+  @keyframes shake {
+    0%,100% { transform: translate(-3px,0) rotate(-2deg); }
+    25%     { transform: translate(3px,-4px) rotate(2deg); }
+    50%     { transform: translate(-3px,-2px) rotate(-1.5deg); }
+    75%     { transform: translate(3px,0) rotate(1.5deg); }
+  }
+  .stage.jump img { animation: jump .6s ease infinite; }
+  @keyframes jump {
+    0%,100% { transform: translateY(0) scale(1); }
+    50%     { transform: translateY(-22px) scale(1.05); }
+  }
+
+  .btns {
+    width:100%; display:flex; gap:16px; justify-content:center;
+    align-items:center; padding-bottom: 2vh;
+    transition: opacity .3s ease;
+  }
+  button {
+    padding: 16px 28px;
+    font-size: clamp(16px,5vw,20px);
+    font-weight:700; border:none; border-radius:999px;
+    color:#fff; cursor:pointer;
+    box-shadow: 0 6px 0 rgba(0,0,0,.14), 0 8px 18px rgba(0,0,0,.14);
+    transition: transform .2s ease, padding .2s ease, font-size .2s ease, left .25s ease, top .25s ease;
+  }
+  button:active { transform: scale(.96); }
+  #no  { background: linear-gradient(145deg,#9e9e9e,#6d6d6d); }
+  #yes { background: linear-gradient(145deg,#ff5f8d,#e91e63); }
+  #no.run {
+    position: fixed;
+    z-index: 99;
+    transition: left .28s cubic-bezier(.34,1.56,.64,1), top .28s cubic-bezier(.34,1.56,.64,1);
+  }
+  .btns.hide { opacity:0; pointer-events:none; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title" id="title">崔志宇给我好好回答</div>
+
+    <div class="stage" id="stage">
+      <img id="pic" src="p1.png" alt="待机">
+    </div>
+
+    <div class="btns" id="btns">
+      <button id="no">不喜欢</button>
+      <button id="yes">喜欢</button>
+    </div>
+  </div>
+
+<script>
+  const IMG_IDLE  = "p1.png";
+  const IMG_ANGRY = "p2.png";
+  const IMG_HAPPY = "p3.png";
+
+  const title = document.getElementById('title');
+  const stage = document.getElementById('stage');
+  const pic   = document.getElementById('pic');
+  const btns  = document.getElementById('btns');
+  const noBtn = document.getElementById('no');
+  const yesBtn= document.getElementById('yes');
+
+  [IMG_ANGRY, IMG_HAPPY].forEach(s => { const i = new Image(); i.src = s; });
+
+  // 让"不喜欢"按钮跑到随机位置（躲开手指）
+  function runAway() {
+    noBtn.classList.add('run');
+    const w = window.innerWidth, h = window.innerHeight;
+    const bw = noBtn.offsetWidth, bh = noBtn.offsetHeight;
+    // 随机位置，留出边距
+    const maxX = w - bw - 20;
+    const maxY = h - bh - 20;
+    const x = 20 + Math.random() * Math.max(0, maxX - 20);
+    const y = 20 + Math.random() * Math.max(0, maxY - 20);
+    noBtn.style.left = x + 'px';
+    noBtn.style.top  = y + 'px';
+  }
+
+  // ===== 点"不喜欢"：变生气 + 按钮变小 + 跑走 + 文字变化 =====
+  let noCount = 0;
+  noBtn.addEventListener('click', () => {
+    noCount++;
+
+    // C. 变生气
+    pic.src = IMG_ANGRY;
+    stage.classList.remove('jump');
+    stage.classList.add('shake');
+
+    // A. 按钮变小
+    const scale = Math.max(0.4, Math.pow(0.8, noCount));
+    noBtn.style.transform = `scale(${scale})`;
+    noBtn.style.padding = `${16*scale}px ${28*scale}px`;
+    noBtn.style.fontSize = `calc(clamp(16px,5vw,20px) * ${scale})`;
+
+    // 文字变化
+    if (noCount === 1) {
+      title.textContent = '你怎么敢不喜欢我 😡';
+      noBtn.textContent = '不喜欢';
+    } else if (noCount === 2) {
+      noBtn.textContent = '再点我拿你打水漂';
+    } else if (noCount >= 3) {
+      title.textContent = '别点了姐姐…🥺';
+      noBtn.textContent = '别点了姐姐…🥺';
+    }
+
+    // B. 按钮躲开手指（第 2 次开始跑）
+    if (noCount >= 2) {
+      runAway();
+    }
+
+    // 3秒后图片回到待机（按钮位置/大小保留）
+    clearTimeout(window._t);
+    window._t = setTimeout(() => {
+      if (noCount < 3) {
+        pic.src = IMG_IDLE;
+        stage.classList.remove('shake');
+      }
+    }, 2500);
+  });
+
+  // ===== 点"喜欢"：开心 + 我也爱你 =====
+  yesBtn.addEventListener('click', () => {
+    pic.src = IMG_HAPPY;
+    stage.classList.remove('shake');
+    stage.classList.add('jump');
+    title.textContent = '我也爱你 ❤️';
+    title.classList.add('happy');
+    btns.classList.add('hide');
+  });
+</script>
+</body>
+</html>
